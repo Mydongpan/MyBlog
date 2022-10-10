@@ -1,7 +1,7 @@
-package com.manong.dpmain.mapper;
+package com.manong.domain.mapper;
 
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
-import com.manong.dpmain.entity.Article;
+import com.manong.domain.entity.Article;
 import org.apache.ibatis.annotations.Mapper;
 
 @Mapper

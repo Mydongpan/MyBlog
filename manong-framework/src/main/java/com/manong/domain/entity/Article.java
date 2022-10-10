@@ -1,4 +1,4 @@
-package com.manong.dpmain.entity;
+package com.manong.domain.entity;
 
 import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
