@@ -1,24 +1,22 @@
 package com.manong.dpmain.entity;
 
-import java.util.Date;
-import com.baomidou.mybatisplus.extension.activerecord.Model;
+import com.baomidou.mybatisplus.annotation.TableName;
 import lombok.AllArgsConstructor;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.ToString;
 
-import java.io.Serializable;
+import java.util.Date;
 
 /**
  * 文章表(Article)表实体类
  *
  * @author makejava
- * @since 2022-10-09 22:24:49
+ * @since 2022-10-10 08:18:37
  */
 @Data
-@NoArgsConstructor
 @AllArgsConstructor
-@ToString
+@NoArgsConstructor
+@TableName("sg_article")
 public class Article {
     
     private Long id;
@@ -51,5 +49,5 @@ public class Article {
     //删除标志（0代表未删除，1代表已删除）
     private Integer delFlag;
 
-    }
+}
 
