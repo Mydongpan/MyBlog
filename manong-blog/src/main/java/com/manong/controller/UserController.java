@@ -1,6 +1,7 @@
 package com.manong.controller;
 
 import com.manong.domain.ResponseResult;
+import com.manong.domain.annotation.SystemLog;
 import com.manong.domain.entity.User;
 import com.manong.domain.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +30,7 @@ public class UserController {
      * @return
      */
     @PutMapping("/userInfo")
+    @SystemLog(businessName = "更新用户信息")
     public ResponseResult updateUser(@RequestBody User user){
 
         return userService.updateUser(user);
