@@ -29,4 +29,7 @@ public interface ArticleService extends IService<Article> {
      * @return
      */
     ResponseResult getArticleDetail(Long id);
+
+    ResponseResult updateViewCount(Long id);
+
 }

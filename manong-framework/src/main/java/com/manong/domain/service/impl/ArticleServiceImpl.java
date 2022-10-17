@@ -12,6 +12,7 @@ import com.manong.domain.mapper.ArticleMapper;
 import com.manong.domain.service.ArticleService;
 import com.manong.domain.service.CategoryService;
 import com.manong.domain.utils.BeanCopyUtil;
+import com.manong.domain.utils.RedisCache;
 import com.manong.domain.vo.ArticleDetailVo;
 import com.manong.domain.vo.ArticleListVo;
 import com.manong.domain.vo.ArticleVo;
@@ -32,6 +33,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     @Autowired
     private CategoryService categoryService;
 
+    @Autowired
+    private RedisCache redisCache;
+
     /**
      * 获取文章主体
      * @param id
@@ -49,6 +53,19 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
             articleDetailVo.setCategoryName(category.getName());
         }
         return ResponseResult.okResult(articleDetailVo);
+    }
+
+    /**
+     * 更新浏览数
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult updateViewCount(Long id) {
+        //更新redis中对应的 id的浏览量
+        redisCache.incrementCacheMapValue(SystemContants.VIEW_COUNT,id.toString(),1);
+        return ResponseResult.okResult();
+
     }
 
     /**

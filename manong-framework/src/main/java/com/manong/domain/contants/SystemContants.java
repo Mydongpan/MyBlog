@@ -24,4 +24,6 @@ public class SystemContants {
 
         public static final String  LINK_COMMENT = "1";
 
+        public static final String  VIEW_COUNT = "viewCount";
+
 }
