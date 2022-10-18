@@ -26,4 +26,10 @@ public class SystemContants {
 
         public static final String  VIEW_COUNT = "viewCount";
 
+        public static final String  MENU = "C";
+
+        public static final String  BUTTON = "F";
+
+        public static final Long  parentId = 0L;
+
 }
