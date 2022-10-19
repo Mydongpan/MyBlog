@@ -1,4 +1,4 @@
-package com.manong.domain.DAO;
+package com.manong.domain.DTO;
 
 import com.manong.domain.entity.Article;
 import lombok.AllArgsConstructor;
@@ -8,7 +8,7 @@ import lombok.NoArgsConstructor;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class ArticleDao extends Article {
+public class ArticleDto extends Article {
 
     private String CategoryName;
 }

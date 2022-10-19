@@ -3,7 +3,7 @@ package com.manong.domain.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.manong.domain.DAO.ArticleDao;
+import com.manong.domain.DTO.ArticleDto;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.contants.SystemContants;
 import com.manong.domain.entity.Article;
@@ -20,9 +20,7 @@ import com.manong.domain.vo.ArticleVo;
 import com.manong.domain.vo.PageVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
-import org.yaml.snakeyaml.events.Event;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 import java.util.stream.Collectors;
@@ -116,15 +114,15 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         page(pageInfo,queryWrapper);
 
         List<Article> articleList = pageInfo.getRecords();
-        List<ArticleDao> articleDaoList = BeanCopyUtil.copyBeanList(articleList, ArticleDao.class);
+        List<ArticleDto> articleDtoList = BeanCopyUtil.copyBeanList(articleList, ArticleDto.class);
 
-        articleDaoList = articleDaoList.stream().map((item) ->{
+        articleDtoList = articleDtoList.stream().map((item) ->{
             //设置分类id
             item.setCategoryName(categoryService.getById(item.getCategoryId()).getName());
             return item;
         }).collect(Collectors.toList());
 
-        List<ArticleListVo> articleListVos = BeanCopyUtil.copyBeanList(articleDaoList, ArticleListVo.class);
+        List<ArticleListVo> articleListVos = BeanCopyUtil.copyBeanList(articleDtoList, ArticleListVo.class);
         PageVo pageVo = new PageVo(articleListVos, pageInfo.getTotal());
 
         return ResponseResult.okResult(pageVo);

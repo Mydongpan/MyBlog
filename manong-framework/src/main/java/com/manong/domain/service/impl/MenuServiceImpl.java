@@ -2,7 +2,7 @@ package com.manong.domain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
-import com.manong.domain.DAO.MenuDao;
+import com.manong.domain.DTO.MenuDto;
 import com.manong.domain.contants.SystemContants;
 import com.manong.domain.entity.Menu;
 import com.manong.domain.mapper.MenuMapper;
@@ -40,7 +40,7 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
 
     @Override
-    public List<MenuDao> selectRouterMenuTreeByUserId(Long userId) {
+    public List<MenuDto> selectRouterMenuTreeByUserId(Long userId) {
         MenuMapper baseMapper = getBaseMapper();
         List<Menu> menuList = null;
         //判断是否是管理员
@@ -52,24 +52,24 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             menuList = baseMapper.selectRouterMenuTreeByUserId(userId);
         }
 
-        List<MenuDao> menuDaoList = BeanCopyUtil.copyBeanList(menuList, MenuDao.class);
+        List<MenuDto> menuDtoList = BeanCopyUtil.copyBeanList(menuList, MenuDto.class);
         //构建tree
 
-        List<MenuDao> menuTree = builderMenuTree(menuDaoList, SystemContants.parentId);
+        List<MenuDto> menuTree = builderMenuTree(menuDtoList, SystemContants.parentId);
         return menuTree;
     }
 
     /**
      * 进行Tree构造
-     * @param menuDaoList
+     * @param menuDtoList
      * @param parentId
      * @return
      */
-    private List<MenuDao> builderMenuTree(List<MenuDao> menuDaoList, Long parentId){
-        List<MenuDao> menuTree = menuDaoList.stream()
+    private List<MenuDto> builderMenuTree(List<MenuDto> menuDtoList, Long parentId){
+        List<MenuDto> menuTree = menuDtoList.stream()
                 .filter(menuDao -> menuDao.getParentId().equals(parentId))
                 .map((item) -> {
-                    item.setChildren(getChildren(item, menuDaoList));
+                    item.setChildren(getChildren(item, menuDtoList));
                     return item;
                 })
                 .collect(Collectors.toList());
@@ -79,17 +79,17 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
 
     /**
      * 获取存入参数的 子Menu集合
-     * @param menuDao
-     * @param menuDaoList
+     * @param menuDto
+     * @param menuDtoList
      * @return
      */
-    private List<MenuDao> getChildren(MenuDao menuDao, List<MenuDao> menuDaoList) {
-        List<MenuDao> menuDaos = menuDaoList.stream().filter((item) -> {
-            return item.getParentId().equals(menuDao.getId());
+    private List<MenuDto> getChildren(MenuDto menuDto, List<MenuDto> menuDtoList) {
+        List<MenuDto> menuDtos = menuDtoList.stream().filter((item) -> {
+            return item.getParentId().equals(menuDto.getId());
         }).collect(Collectors.toList());
 
-        List<MenuDao> childrenList = menuDaos.stream().map((item) -> {
-            item.setChildren(getChildren(menuDao,menuDaoList));
+        List<MenuDto> childrenList = menuDtos.stream().map((item) -> {
+            item.setChildren(getChildren(menuDto, menuDtoList));
             return item;
         }).collect(Collectors.toList());
 

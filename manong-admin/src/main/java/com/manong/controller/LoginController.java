@@ -1,17 +1,16 @@
 package com.manong.controller;
 
-import com.manong.domain.DAO.MenuDao;
+import com.manong.domain.DTO.MenuDto;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.LoginUser;
-import com.manong.domain.entity.Menu;
 import com.manong.domain.entity.User;
 import com.manong.domain.enums.AppHttpCodeEnum;
 import com.manong.domain.exception.SystemException;
-import com.manong.domain.service.BlogLoginService;
 import com.manong.domain.service.LoginService;
 import com.manong.domain.service.MenuService;
 import com.manong.domain.service.RoleService;
 import com.manong.domain.utils.BeanCopyUtil;
+import com.manong.domain.utils.RedisCache;
 import com.manong.domain.utils.SecurityUtils;
 import com.manong.domain.vo.AdminUserInfoVo;
 import com.manong.domain.vo.RoutersVo;
@@ -37,6 +36,9 @@ public class LoginController {
     @Autowired
     private LoginService loginService;
 
+    @Autowired
+    private RedisCache redisCache;
+
     /**
      * 登录功能
      * @param user
@@ -48,7 +50,7 @@ public class LoginController {
         if (!StringUtils.hasText(user.getUserName())){
             throw new SystemException(AppHttpCodeEnum.REQUIRE_USERNAME);
         }
-        return null;
+        return loginService.login(user);
     }
 
 
@@ -78,9 +80,17 @@ public class LoginController {
     public ResponseResult<RoutersVo> getRouters(){
         Long userId = SecurityUtils.getUserId();
 
-        List<MenuDao> menuDaos = menuService.selectRouterMenuTreeByUserId(userId);
+        List<MenuDto> menuDtos = menuService.selectRouterMenuTreeByUserId(userId);
 
-        return ResponseResult.okResult(menuDaos);
+        return ResponseResult.okResult(menuDtos);
     }
 
+    @PostMapping("/user/logout")
+    public ResponseResult logout(){
+
+        Long userId = SecurityUtils.getUserId();
+        redisCache.deleteObject("login" + userId);
+
+        return ResponseResult.okResult();
+    }
 }

@@ -1,4 +1,4 @@
-package com.manong.domain.DAO;
+package com.manong.domain.DTO;
 
 import com.manong.domain.entity.Menu;
 import lombok.AllArgsConstructor;
@@ -10,7 +10,7 @@ import java.util.List;
 @Data
 @AllArgsConstructor
 @NoArgsConstructor
-public class MenuDao extends Menu {
+public class MenuDto extends Menu {
 
-    private List<MenuDao> children;
+    private List<MenuDto> children;
 }
