@@ -32,4 +32,6 @@ public class SystemContants {
 
         public static final Long  parentId = 0L;
 
+        public static final char  ADMIN = '1';
+
 }

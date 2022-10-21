@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.manong.domain.DTO.AddArticleVo;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.Article;
+import com.manong.domain.vo.ArticleVo;
 
 import java.util.List;
 
@@ -31,8 +32,35 @@ public interface ArticleService extends IService<Article> {
      */
     ResponseResult getArticleDetail(Long id);
 
+    /**
+     * 更新文章浏览数
+     * @param id
+     * @return
+     */
     ResponseResult updateViewCount(Long id);
 
+    /**
+     * 新增博文
+     * @param addarticleVo
+     * @return
+     */
     ResponseResult addArticle(AddArticleVo addarticleVo);
 
+    /**
+     * 获取后台文章列表
+     * @param article
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    ResponseResult selectArticleList(Article article,Integer pageNum, Integer pageSize);
+
+    /**
+     * 回显文章
+     * @param id
+     * @return
+     */
+    ResponseResult getInfo(Long id);
+
+    ResponseResult update(ArticleVo articleVo);
 }

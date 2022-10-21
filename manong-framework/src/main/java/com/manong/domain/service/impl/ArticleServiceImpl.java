@@ -23,6 +23,7 @@ import com.manong.domain.vo.ArticleVo;
 import com.manong.domain.vo.PageVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Objects;
@@ -94,6 +95,52 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
     }
 
     /**
+     * 获取后端文章列表
+     * @param article
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public ResponseResult selectArticleList(Article article,Integer pageNum, Integer pageSize) {
+
+        Page<Article> pageInfo = new Page<>(pageNum,pageSize);
+
+        LambdaQueryWrapper<Article> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.like(StringUtils.hasText(article.getTitle()),Article::getTitle,article.getTitle());
+        queryWrapper.like(StringUtils.hasText(article.getSummary()),Article::getSummary,article.getSummary());
+        Page<Article> articlePage = page(pageInfo, queryWrapper);
+
+        PageVo pageVo = new PageVo(pageInfo.getRecords(), pageInfo.getTotal());
+
+        return ResponseResult.okResult(pageVo);
+    }
+
+    /**
+     * 后端回显并且修改文章
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult getInfo(Long id) {
+
+        Article article = getById(id);
+
+        //查询与该文章相关的标签
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleTag::getArticleId,article.getId());
+        List<ArticleTag> articleTagList = articleTagService.list(queryWrapper);
+
+        List<Long> tagList = articleTagList.stream().map(articleTag -> articleTag.getTagId())
+                .collect(Collectors.toList());
+
+        ArticleVo articleVo = BeanCopyUtil.copyBean(article, ArticleVo.class);
+        articleVo.setTags(tagList);
+
+        return ResponseResult.okResult(articleVo);
+    }
+
+    /**
      * 根据浏览量获取热度最高的文章
      * @return
      */
@@ -153,5 +200,33 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         PageVo pageVo = new PageVo(articleListVos, pageInfo.getTotal());
 
         return ResponseResult.okResult(pageVo);
+    }
+
+    /**
+     * 修改文章
+     * @param articleVo
+     * @return
+     */
+    @Override
+    public ResponseResult update(ArticleVo articleVo) {
+
+        Article article = BeanCopyUtil.copyBean(articleVo, Article.class);
+        updateById(article);
+
+        //删除原来文章与标签的对应关系
+        LambdaQueryWrapper<ArticleTag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(ArticleTag::getArticleId,article.getId());
+        articleTagService.remove(queryWrapper);
+        //添加新的博客和标签的关联信息
+        List<Long> tags = articleVo.getTags();
+        List<ArticleTag> articleTags = tags.stream().map((item) -> {
+            ArticleTag articleTag = new ArticleTag(articleVo.getId(), item);
+            return articleTag;
+        }).collect(Collectors.toList());
+
+        articleTagService.saveBatch(articleTags);
+
+
+        return ResponseResult.okResult();
     }
 }

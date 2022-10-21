@@ -2,13 +2,16 @@ package com.manong.controller;
 
 import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.annotation.ExcelProperty;
+import com.alibaba.fastjson.JSON;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.Category;
+import com.manong.domain.enums.AppHttpCodeEnum;
 import com.manong.domain.service.CategoryService;
 import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.utils.WebUtils;
 import com.manong.domain.vo.ExcelCategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
@@ -37,6 +40,7 @@ public class CategoryController {
     }
 
     @GetMapping("/export")
+    @PreAuthorize("@ps.hasPermission('content:category:export')")
     public void export(HttpServletResponse response){
 
         try {
@@ -51,6 +55,8 @@ public class CategoryController {
                     .autoCloseStream(Boolean.FALSE).sheet("分类导出").doWrite(excelCategoryVos);
         } catch (Exception e) {
             e.printStackTrace();
+            ResponseResult responseResult = ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
+            WebUtils.renderString(response,JSON.toJSONString(responseResult));
         }
 
 
