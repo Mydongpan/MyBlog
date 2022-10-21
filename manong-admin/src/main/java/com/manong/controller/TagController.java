@@ -21,7 +21,7 @@ public class TagController {
     @GetMapping("/list")
     public ResponseResult list(Integer pageNum, Integer pageSize, TagVo tagVo){
 
-        return tagService.getTagList(pageNum,pageSize,tagVo);
+        return tagService.getTagListPage(pageNum,pageSize,tagVo);
     }
 
     /**
@@ -55,5 +55,11 @@ public class TagController {
     public ResponseResult updateTag(@RequestBody Tag tag){
         tagService.updateById(tag);
         return ResponseResult.okResult();
+    }
+
+    @GetMapping("/listAllTag")
+    public ResponseResult getAllTag(){
+
+        return tagService.getAllTag();
     }
 }

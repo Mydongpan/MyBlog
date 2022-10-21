@@ -12,6 +12,7 @@ import com.manong.domain.service.CategoryService;
 import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.vo.CategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -40,8 +41,8 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
            Long categoryId = item.getCategoryId();
            return categoryId;
         }).collect(Collectors.toSet());
-        //通过分类id，得到分类名称
 
+        //通过分类id，得到分类名称
         List<Category> categoryList = listByIds(categoryIds);
         categoryList = categoryList.stream().filter((item) ->{
             boolean equals = SystemContants.STATUS_NORMAL.equals(item.getStatus());
@@ -53,4 +54,21 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
 
         return ResponseResult.okResult(categoryVoList);
     }
+
+    /**
+     * 获取所有的标签
+     * @return
+     */
+    @Override
+    public ResponseResult<CategoryVo> getAllCategory() {
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(Category::getStatus,SystemContants.STATUS_NORMAL);
+        List<Category> categoryList = list(queryWrapper);
+        List<CategoryVo> categoryVoList = BeanCopyUtil.copyBeanList(categoryList, CategoryVo.class);
+
+        return ResponseResult.okResult(categoryVoList);
+    }
+
+
 }

@@ -7,10 +7,13 @@ import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.Tag;
 import com.manong.domain.mapper.TagMapper;
 import com.manong.domain.service.TagService;
+import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.vo.PageVo;
 import com.manong.domain.vo.TagVo;
 import org.springframework.stereotype.Service;
 import org.springframework.util.StringUtils;
+
+import java.util.List;
 
 @Service
 public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagService {
@@ -23,7 +26,7 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
      * @return
      */
     @Override
-    public ResponseResult<PageVo> getTagList(Integer pageNum, Integer pageSize, TagVo tagVo) {
+    public ResponseResult<PageVo> getTagListPage(Integer pageNum, Integer pageSize, TagVo tagVo) {
 
         Page<Tag> pageInfo = new Page(pageNum,pageSize);
 
@@ -47,6 +50,18 @@ public class TagServiceImpl extends ServiceImpl<TagMapper, Tag> implements TagSe
     public ResponseResult saveTag(Tag tag) {
         save(tag);
         return ResponseResult.okResult();
+    }
+
+    @Override
+    public ResponseResult<TagVo> getAllTag() {
+
+        LambdaQueryWrapper<Tag> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.select(Tag::getId,Tag::getName);
+        List<Tag> tagList = list(queryWrapper);
+
+        List<TagVo> tagVoList = BeanCopyUtil.copyBeanList(tagList, TagVo.class);
+
+        return ResponseResult.okResult(tagVoList);
     }
 
     /**

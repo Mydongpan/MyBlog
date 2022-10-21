@@ -3,13 +3,16 @@ package com.manong.domain.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.manong.domain.DTO.AddArticleVo;
 import com.manong.domain.DTO.ArticleDto;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.contants.SystemContants;
 import com.manong.domain.entity.Article;
+import com.manong.domain.entity.ArticleTag;
 import com.manong.domain.entity.Category;
 import com.manong.domain.mapper.ArticleMapper;
 import com.manong.domain.service.ArticleService;
+import com.manong.domain.service.ArticleTagService;
 import com.manong.domain.service.CategoryService;
 import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.utils.RedisCache;
@@ -33,6 +36,9 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
 
     @Autowired
     private RedisCache redisCache;
+
+    @Autowired
+    private ArticleTagService articleTagService;
 
     /**
      * 获取文章主体
@@ -64,6 +70,27 @@ public class ArticleServiceImpl extends ServiceImpl<ArticleMapper, Article> impl
         redisCache.incrementCacheMapValue(SystemContants.VIEW_COUNT,id.toString(),1);
         return ResponseResult.okResult();
 
+    }
+
+    /**
+     * 新增博文
+     * @param addarticle
+     * @return
+     */
+    @Override
+    public ResponseResult addArticle(AddArticleVo addarticle) {
+        Article article = BeanCopyUtil.copyBean(addarticle, Article.class);
+        save(article);
+
+        //将文章和标签的关系保存
+        List<ArticleTag> articleTags = addarticle.getTags().stream().map((item) -> {
+            ArticleTag articleTag = new ArticleTag(article.getId(), item);
+            return articleTag;
+        }).collect(Collectors.toList());
+
+        articleTagService.saveBatch(articleTags);
+
+        return ResponseResult.okResult();
     }
 
     /**

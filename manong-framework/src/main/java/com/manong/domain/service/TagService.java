@@ -8,9 +8,10 @@ import com.manong.domain.vo.TagVo;
 
 public interface TagService extends IService<Tag> {
 
-    ResponseResult<PageVo> getTagList(Integer pageNum, Integer pageSize, TagVo tagVo);
+    ResponseResult<PageVo> getTagListPage(Integer pageNum, Integer pageSize, TagVo tagVo);
 
     ResponseResult saveTag(Tag tag);
 
+    ResponseResult<TagVo> getAllTag();
 //    ResponseResult updateTag(Tag tag);
 }

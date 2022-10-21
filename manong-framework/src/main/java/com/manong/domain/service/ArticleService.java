@@ -1,6 +1,7 @@
 package com.manong.domain.service;
 
 import com.baomidou.mybatisplus.extension.service.IService;
+import com.manong.domain.DTO.AddArticleVo;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.Article;
 
@@ -31,5 +32,7 @@ public interface ArticleService extends IService<Article> {
     ResponseResult getArticleDetail(Long id);
 
     ResponseResult updateViewCount(Long id);
+
+    ResponseResult addArticle(AddArticleVo addarticleVo);
 
 }

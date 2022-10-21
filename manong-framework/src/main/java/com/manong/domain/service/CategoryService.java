@@ -7,4 +7,6 @@ import com.manong.domain.entity.Category;
 public interface CategoryService extends IService<Category> {
 
     ResponseResult getCategoryList();
+
+    ResponseResult getAllCategory();
 }

@@ -1,6 +1,7 @@
 package com.manong.domain.service.impl;
 
 import com.google.gson.Gson;
+import com.manong.domain.ResponseResult;
 import com.manong.domain.service.UploadService;
 import com.qiniu.common.QiniuException;
 import com.qiniu.http.Response;
@@ -14,7 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.FileInputStream;
 import java.io.InputStream;
 
 @Service
@@ -28,8 +28,11 @@ public class OssUploadService implements UploadService {
     private String bucket;
 
     @Override
-    public ResponseBody uploadImg(MultipartFile file) {
-        return null;
+    public ResponseResult uploadImg(MultipartFile file) {
+
+        OssUpload(file);
+
+        return ResponseResult.okResult();
     }
 
 
