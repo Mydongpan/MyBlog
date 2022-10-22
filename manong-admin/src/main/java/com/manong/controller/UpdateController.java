@@ -11,7 +11,7 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.IOException;
 
 @RestController
-public class UploadController {
+public class UpdateController{
 
     @Autowired
     private UploadService uploadService;

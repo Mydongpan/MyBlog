@@ -3,13 +3,17 @@ package com.manong.domain.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.manong.domain.DTO.MenuDto;
+import com.manong.domain.ResponseResult;
 import com.manong.domain.contants.SystemContants;
 import com.manong.domain.entity.Menu;
 import com.manong.domain.mapper.MenuMapper;
 import com.manong.domain.service.MenuService;
 import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.utils.SecurityUtils;
+import com.manong.domain.utils.SystemConverter;
+import com.manong.domain.vo.MenuTreeVo;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -53,8 +57,8 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
         }
 
         List<MenuDto> menuDtoList = BeanCopyUtil.copyBeanList(menuList, MenuDto.class);
-        //构建tree
 
+        //构建tree
         List<MenuDto> menuTree = builderMenuTree(menuDtoList, SystemContants.parentId);
         return menuTree;
     }
@@ -97,4 +101,55 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
     }
 
 
+    @Override
+    public ResponseResult getList(Menu menu) {
+        //查询所有的菜单
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        //根据menuName和status进行模糊查询
+        queryWrapper.like(StringUtils.hasText(menu.getMenuName()),Menu::getMenuName,menu.getMenuName());
+        queryWrapper.eq(StringUtils.hasText(menu.getStatus()),Menu::getStatus,SystemContants.STATUS_NORMAL);
+        //排序 parent_id和order_num
+        queryWrapper.orderByDesc(Menu::getParentId,Menu::getOrderNum);
+        List<Menu> menuList = list(queryWrapper);
+        //如果有子菜单，将子菜单添加进去
+        List<MenuDto> menuDtos = BeanCopyUtil.copyBeanList(menuList, MenuDto.class);
+
+        return ResponseResult.okResult(menuDtos);
+    }
+
+    /**
+     * 获取菜单树
+     * @return
+     */
+    @Override
+    public ResponseResult treeSelect() {
+
+        List<Menu> menuList = list();
+        //如果有子菜单，将子菜单添加进去
+        List<MenuDto> menuDtos = BeanCopyUtil.copyBeanList(menuList, MenuDto.class);
+        List<MenuTreeVo> menuTreeVos = SystemConverter.buildMenuSelectTree(menuDtos);
+
+        return ResponseResult.okResult(menuTreeVos);
+    }
+
+    /**
+     * 删除菜单
+     * @param menuId
+     * @return
+     */
+    @Override
+    public ResponseResult delete(Long menuId) {
+
+        LambdaQueryWrapper<Menu> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Menu::getId,menuId);
+        Menu menu = getOne(queryWrapper);
+
+        if (menuId != menu.getParentId()){
+            removeById(menuId);
+            return ResponseResult.okResult();
+        }else {
+            //如果有子菜单，提示错误
+            return ResponseResult.errorResult(500,"存在子菜单不允许删除");
+        }
+    }
 }
