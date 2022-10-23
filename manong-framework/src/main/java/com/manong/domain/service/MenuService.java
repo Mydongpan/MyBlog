@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.extension.service.IService;
 import com.manong.domain.DTO.MenuDto;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.Menu;
+import com.manong.domain.vo.MenuTreeVo;
 
 import java.util.List;
 
@@ -17,7 +18,9 @@ public interface MenuService extends IService<Menu> {
 
     ResponseResult delete(Long menuId);
 
-    ResponseResult treeSelect();
+    List<MenuTreeVo> treeSelect();
+
+    List<Long> selectMenuListByRoleId(Long roleid);
 
 
 }

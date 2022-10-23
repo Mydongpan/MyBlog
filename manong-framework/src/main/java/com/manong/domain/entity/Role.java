@@ -2,6 +2,7 @@ package com.manong.domain.entity;
 
 import java.util.Date;
 
+import com.baomidou.mybatisplus.annotation.TableField;
 import com.baomidou.mybatisplus.annotation.TableName;
 import com.baomidou.mybatisplus.extension.activerecord.Model;
 import lombok.AllArgsConstructor;
@@ -46,5 +47,7 @@ public class Role {
     //备注
     private String remark;
 
+    @TableField(exist = false)
+    private Long[] menuIds;
 }
 

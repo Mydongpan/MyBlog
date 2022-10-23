@@ -122,14 +122,14 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
      * @return
      */
     @Override
-    public ResponseResult treeSelect() {
+    public List<MenuTreeVo> treeSelect() {
 
         List<Menu> menuList = list();
         //如果有子菜单，将子菜单添加进去
         List<MenuDto> menuDtos = BeanCopyUtil.copyBeanList(menuList, MenuDto.class);
         List<MenuTreeVo> menuTreeVos = SystemConverter.buildMenuSelectTree(menuDtos);
 
-        return ResponseResult.okResult(menuTreeVos);
+        return menuTreeVos;
     }
 
     /**
@@ -151,5 +151,9 @@ public class MenuServiceImpl extends ServiceImpl<MenuMapper, Menu> implements Me
             //如果有子菜单，提示错误
             return ResponseResult.errorResult(500,"存在子菜单不允许删除");
         }
+    }
+
+    public List<Long> selectMenuListByRoleId(Long roleId){
+       return getBaseMapper().selectMenuListByRoleId(roleId);
     }
 }

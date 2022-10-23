@@ -3,9 +3,13 @@ package com.manong.controller;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.Menu;
 import com.manong.domain.service.MenuService;
+import com.manong.domain.vo.MenuTreeVo;
+import com.manong.domain.vo.RoleMenuTreeSelectVo;
 import org.apache.ibatis.session.SqlSession;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/system/menu")
@@ -85,8 +89,19 @@ public class MenuController {
      */
     @GetMapping("/treeselect")
     public ResponseResult treeselect(){
+        List<MenuTreeVo> menuTreeVos = menuService.treeSelect();
+        return ResponseResult.okResult(menuTreeVos);
 
-        return menuService.treeSelect();
+    }
+
+    @GetMapping("/roleMenuTreeselect/{roleId}")
+    public ResponseResult roleMenuTreeselect(@PathVariable Long roleId){
+        List<Long> checkedKeys = menuService.selectMenuListByRoleId(roleId);
+        List<MenuTreeVo> menuTreeVos = menuService.treeSelect();
+        RoleMenuTreeSelectVo vo = new RoleMenuTreeSelectVo(menuTreeVos,checkedKeys);
+
+        return ResponseResult.okResult(vo);
+
     }
 
 

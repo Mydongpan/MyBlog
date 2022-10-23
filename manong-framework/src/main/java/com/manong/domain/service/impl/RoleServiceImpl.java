@@ -5,7 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.entity.Role;
+import com.manong.domain.entity.RoleMenu;
 import com.manong.domain.mapper.RoleMapper;
+import com.manong.domain.service.RoleMenuService;
 import com.manong.domain.service.RoleService;
 import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.utils.SecurityUtils;
@@ -13,16 +15,22 @@ import com.manong.domain.vo.PageVo;
 import com.manong.domain.vo.RoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements RoleService {
 
     @Autowired
     private RoleService roleService;
+
+    @Autowired
+    private RoleMenuService roleMenuService;
 
     /**
      * 根据id查询用户角色信息
@@ -64,5 +72,33 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
         PageVo pageVo = new PageVo(roleVos, pageInfo.getTotal());
 
         return ResponseResult.okResult(pageVo);
+    }
+
+    /**
+     * 添加用户
+     * @param role
+     * @return
+     */
+    @Override
+    @Transactional
+    public void insertRole(Role role) {
+
+        save(role);
+        //如果menuId有值
+        if(role.getMenuIds().length > 0 && role.getMenuIds() != null){
+            insertRoleMenu(role);
+        }
+    }
+
+    private void insertRoleMenu(Role role){
+
+        Long[] menuIds = role.getMenuIds();
+        List<RoleMenu> roleMenuList = Arrays.stream(menuIds).map((item) -> {
+            RoleMenu roleMenu = new RoleMenu(role.getId(), item);
+            return roleMenu;
+        }).collect(Collectors.toList());
+
+        roleMenuService.saveBatch(roleMenuList);
+
     }
 }
