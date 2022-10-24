@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
 import com.manong.domain.ResponseResult;
+import com.manong.domain.contants.SystemContants;
 import com.manong.domain.entity.Role;
 import com.manong.domain.entity.RoleMenu;
 import com.manong.domain.mapper.RoleMapper;
@@ -100,5 +101,30 @@ public class RoleServiceImpl extends ServiceImpl<RoleMapper, Role> implements Ro
 
         roleMenuService.saveBatch(roleMenuList);
 
+    }
+
+    /**
+     * 获取所有状态正常的角色列表
+     *
+     * @return
+     */
+    @Override
+    public List<Role> selectAllRole() {
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Role::getStatus, SystemContants.STATUS_NORMAL);
+        List<Role> roleList = list(queryWrapper);
+
+        return roleList;
+    }
+
+    /**
+     * 根据userId查询roleIds
+     * @param id
+     * @return
+     */
+    @Override
+    public List<Long> selectRoleIdsByUserId(Long id) {
+        List<Long> roleIds = getBaseMapper().selectRoleIdByUserId(id);
+        return roleIds;
     }
 }

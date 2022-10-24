@@ -1,7 +1,9 @@
 package com.manong.controller;
 
+import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.manong.domain.DTO.ChangeRoleStatusDto;
 import com.manong.domain.ResponseResult;
+import com.manong.domain.contants.SystemContants;
 import com.manong.domain.entity.Role;
 import com.manong.domain.entity.RoleMenu;
 import com.manong.domain.service.RoleMenuService;
@@ -10,6 +12,8 @@ import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.vo.RoleVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RequestMapping("/system/role")
 @RestController
@@ -79,5 +83,13 @@ public class RoleController {
     public ResponseResult delete(@PathVariable Long id){
         roleService.removeById(id);
         return ResponseResult.okResult();
+    }
+
+    @GetMapping("/listAllRole")
+    public ResponseResult listAllRole(){
+        LambdaQueryWrapper<Role> queryWrapper = new LambdaQueryWrapper<>();
+        queryWrapper.eq(Role::getStatus, SystemContants.STATUS_NORMAL);
+        List<Role> roleList = roleService.list(queryWrapper);
+        return ResponseResult.okResult(roleList);
     }
 }
