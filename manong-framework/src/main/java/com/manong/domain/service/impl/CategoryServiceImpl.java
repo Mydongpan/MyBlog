@@ -1,7 +1,9 @@
 package com.manong.domain.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
+import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.baomidou.mybatisplus.extension.service.impl.ServiceImpl;
+import com.manong.domain.DTO.CategoryDto;
 import com.manong.domain.ResponseResult;
 import com.manong.domain.contants.SystemContants;
 import com.manong.domain.entity.Article;
@@ -11,9 +13,11 @@ import com.manong.domain.service.ArticleService;
 import com.manong.domain.service.CategoryService;
 import com.manong.domain.utils.BeanCopyUtil;
 import com.manong.domain.vo.CategoryVo;
+import com.manong.domain.vo.PageVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.stereotype.Service;
+import org.springframework.util.StringUtils;
 
 import java.util.List;
 import java.util.Set;
@@ -70,5 +74,41 @@ public class CategoryServiceImpl extends ServiceImpl<CategoryMapper, Category> i
         return ResponseResult.okResult(categoryVoList);
     }
 
+    /**
+     * 分页查询分类列表
+     * @param category
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @Override
+    public ResponseResult categoryPage(Category category, Integer pageNum, Integer pageSize) {
 
+        Page<Category> pageInfo = new Page<>(pageNum,pageSize);
+        LambdaQueryWrapper<Category> queryWrapper = new LambdaQueryWrapper<>();
+
+        queryWrapper.eq(StringUtils.hasText(category.getName()),Category::getName,category.getName());
+        queryWrapper.eq(Category::getStatus,SystemContants.STATUS_NORMAL);
+
+        Page<Category> page = page(pageInfo, queryWrapper);
+        List<CategoryDto> categoryDtoList = BeanCopyUtil.copyBeanList(page.getRecords(), CategoryDto.class);
+
+        PageVo pageVo = new PageVo(categoryDtoList, page.getTotal());
+
+        return ResponseResult.okResult(pageVo);
+    }
+
+    /**
+     * 根据分类id查询分类信息
+     * @param id
+     * @return
+     */
+    @Override
+    public ResponseResult selectByCategoryId(Long id) {
+
+        Category category = getBaseMapper().selectById(id);
+        CategoryDto categoryDto = BeanCopyUtil.copyBean(category, CategoryDto.class);
+
+        return ResponseResult.okResult(categoryDto);
+    }
 }

@@ -12,10 +12,7 @@ import com.manong.domain.utils.WebUtils;
 import com.manong.domain.vo.ExcelCategoryVo;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.access.prepost.PreAuthorize;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletResponse;
 import java.io.UnsupportedEncodingException;
@@ -58,8 +55,66 @@ public class CategoryController {
             ResponseResult responseResult = ResponseResult.errorResult(AppHttpCodeEnum.SYSTEM_ERROR);
             WebUtils.renderString(response,JSON.toJSONString(responseResult));
         }
+    }
 
+    /**
+     * 分页查询分类列表
+     * @param category
+     * @param pageNum
+     * @param pageSize
+     * @return
+     */
+    @GetMapping("/list")
+    public ResponseResult page(Category category,Integer pageNum,Integer pageSize){
 
+        return categoryService.categoryPage(category,pageNum,pageSize);
 
+    }
+
+    /**
+     * 新增分类
+     * @param category
+     * @return
+     */
+    @PostMapping
+    public ResponseResult addCategory(@RequestBody Category category){
+
+        categoryService.save(category);
+        return ResponseResult.okResult();
+    }
+
+    /**
+     * 根据分类di查询分类信息
+     * @param id
+     * @return
+     */
+    @GetMapping("/{categoryId}")
+    public ResponseResult selectByCategoryId(@PathVariable Long id){
+
+        return categoryService.selectByCategoryId(id);
+    }
+
+    /**
+     * 将修改后的数据保存到数据库中
+     * @param category
+     * @return
+     */
+    @PutMapping
+    public ResponseResult eidt(@RequestBody Category category){
+
+        categoryService.updateById(category);
+        return ResponseResult.okResult();
+    }
+
+    /**
+     * 根据分类id移除指定分类
+     * @param id
+     * @return
+     */
+    @DeleteMapping("/{categoryId}")
+    public ResponseResult deleteById(@PathVariable Long id){
+
+        categoryService.removeById(id);
+        return ResponseResult.okResult();
     }
 }
